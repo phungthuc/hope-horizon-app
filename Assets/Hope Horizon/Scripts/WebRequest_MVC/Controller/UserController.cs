@@ -1,11 +1,12 @@
 ﻿using Hope_Horizon.Scripts.WebRequest_MVC.Model;
 using Hope_Horizon.Scripts.WebRequest_MVC.View;
-using HopeHorizon.Scripts.PlayerPrefs;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Globalization;
+using System;
 
 namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
 {
@@ -18,7 +19,7 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
 
     public class UserController : MonoBehaviour
     {
-        private const string baseUrl = Constants.BASE_URL + Constants.USER_URL;
+        private const string baseUrl = Constants.BASE_URL;
         public UserView view;
 
         private void Start()
@@ -31,23 +32,63 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
 
         public void Register()
         {
+            string lastName = view.GetLastName();
+            string firstName = view.GetFirstName();
             string username = view.GetUsername();
             string password = view.GetPassword();
+            string email = view.GetEmail();
+            string dateOfBirth = view.GetDateOfBirth();
 
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (!IsValidEmail(email))
             {
-                view.SetFeedback("Please fill in all fields.");
+                view.SetFeedback("Please enter a valid email address.");
                 return;
             }
 
-            StartCoroutine(RegisterCoroutine(username, password));
+            if (!DateTime.TryParseExact(dateOfBirth, "dd/mm/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
+            {
+                view.SetFeedback("Date of birth must be in the format DD/MM/YYYY.");
+                return;
+            }
+
+            StartCoroutine(RegisterCoroutine(
+                lastName, firstName, username, password, email, parsedDate.ToString("dd/mm/yyyy")
+            ));
         }
 
-        private IEnumerator RegisterCoroutine(string username, string password)
+        private bool IsValidEmail(string email)
         {
-            var userData = new { username, password };
-            string jsonData = JsonConvert.SerializeObject(userData);
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private IEnumerator RegisterCoroutine(string lastName, string firstName, string username, string password, string email, string dateOfBirth)
+        {
+            var user = new User
+            {
+                Username = username,
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                Password = password,
+                Profile = new Profile
+                {
+                    Birthday = dateOfBirth
+                }
+            };
+
+            string jsonData = JsonConvert.SerializeObject(user);
             byte[] jsonToSend = Encoding.UTF8.GetBytes(jsonData);
+
+            Debug.Log("JSON Data: " + jsonData);
+            Debug.Log("Byte Array Length: " + jsonToSend.Length);
 
             using (UnityWebRequest request = new UnityWebRequest(baseUrl + "/register/", "POST"))
             {
@@ -63,6 +104,8 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
                 }
                 else
                 {
+                    Debug.LogError("Request failed with error: " + request.error);
+                    Debug.LogError("Response: " + request.downloadHandler.text);
                     view.SetFeedback("Registration failed: " + request.error);
                 }
             }
@@ -70,9 +113,9 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
 
         public void Login()
         {
-            PlayerPrefsManager.GetAllKeys();    
-            string username = view.GetUsername();
-            string password = view.GetPassword();
+            PlayerPrefsManager.GetAllKeys();
+            string username = view.GetLoginUsername();
+            string password = view.GetLoginPassword();
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
@@ -89,7 +132,7 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
             string jsonData = JsonConvert.SerializeObject(userData);
             byte[] jsonToSend = Encoding.UTF8.GetBytes(jsonData);
 
-            using (UnityWebRequest request = new UnityWebRequest(baseUrl + "/login/", "POST"))
+            using (UnityWebRequest request = new UnityWebRequest(baseUrl + Constants.LOGIN_URL, "POST"))
             {
                 request.uploadHandler = new UploadHandlerRaw(jsonToSend);
                 request.downloadHandler = new DownloadHandlerBuffer();
@@ -103,7 +146,7 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
                 }
                 else
                 {
-                    view.SetFeedback("Login failed: " + request.error);
+                    view.SetFeedback("Username or password is incorrect!");
                 }
             }
         }
@@ -137,7 +180,7 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
 
         public void UpdatePassword()
         {
-            string oldPassword = view.GetPassword();
+            string oldPassword = view.GetOldPassword();
             string newPassword = view.GetNewPassword();
 
             if (string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))

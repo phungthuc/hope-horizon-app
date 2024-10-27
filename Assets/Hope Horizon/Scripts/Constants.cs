@@ -8,8 +8,9 @@ namespace Hope_Horizon.Scripts
     {
         // When deploying to a real server, change this to the server's IP address
         public const string BASE_URL = "http://127.0.0.1:8000/api";
-        public const string USER_URL = "/auth";
-        public const string POST_URL = "/posts";
-        public const string POST_CATE_URL = "/postCates";
+        public const string LOGIN_URL = "/auth/login/";
+        public const string REGISTER_URL = "/register/";
+        // public const string POST_URL = "/posts";
+        // public const string POST_CATE_URL = "/postCates";
     }
 }
