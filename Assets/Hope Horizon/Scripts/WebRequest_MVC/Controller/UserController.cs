@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Globalization;
 using System;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
 {
@@ -19,6 +21,8 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
 
     public class UserController : MonoBehaviour
     {
+        public UnityEvent OnLoginSuccess;
+
         private const string baseUrl = Constants.BASE_URL;
         public UserView view;
 
@@ -87,9 +91,6 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
             string jsonData = JsonConvert.SerializeObject(user);
             byte[] jsonToSend = Encoding.UTF8.GetBytes(jsonData);
 
-            Debug.Log("JSON Data: " + jsonData);
-            Debug.Log("Byte Array Length: " + jsonToSend.Length);
-
             using (UnityWebRequest request = new UnityWebRequest(baseUrl + "/register/", "POST"))
             {
                 request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -104,9 +105,9 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
                 }
                 else
                 {
-                    Debug.LogError("Request failed with error: " + request.error);
-                    Debug.LogError("Response: " + request.downloadHandler.text);
-                    view.SetFeedback("Registration failed: " + request.error);
+                    // Debug.LogError("Request failed with error: " + request.error);
+                    // Debug.LogError("Response: " + request.downloadHandler.text);
+                    view.SetFeedback("Username or email is already taken.");
                 }
             }
         }
@@ -166,6 +167,8 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
                     PlayerPrefsManager.SetTokenExpiry(tokenExpiry);
 
                     view.SetFeedback("Login successful.");
+                    OnLoginSuccess?.Invoke();
+                    SceneManager.LoadScene("scene_main");
                 }
                 else
                 {

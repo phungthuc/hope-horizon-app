@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace HopeHorizon.Scripts.Components
+namespace HopeHorizon.Scripts.Components.Scenes
 {
     public class PlayTransitionScene : MonoBehaviour
     {
