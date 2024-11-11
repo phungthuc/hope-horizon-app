@@ -14,5 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Hope Horizon/Scenes/scene_main.unity
     guid: 722d30b64d069b7488219d428147d2d2
+  - enabled: 1
+    path: Assets/Hope Horizon/Scenes/scene_game.unity
+    guid: 1806d89e8ba9bf14fbdcd48164e3eee0
   m_configObjects:
-    com.unity.addressableassets: {fileID: 11400000, guid: d4f7f8ba3516c6a46bce6a9c3016a32c, type: 2}
+    com.unity.addressableassets: {fileID: 11400000, guid: 7ca190004f2fcc343a956439e04e9a31, type: 2}
