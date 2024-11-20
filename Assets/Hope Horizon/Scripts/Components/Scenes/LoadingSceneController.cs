@@ -10,6 +10,7 @@ namespace Hope_Horizon.Scripts.Components
         public UnityEvent Loaded;
         void Start()
         {
+            PlayerPrefsManager.ClearTokens();
             StartCoroutine(LoadEssentialData());
         }
 

@@ -43,7 +43,9 @@ namespace Hope_Horizon.Scripts.Components.Journal
             {
                 var entry = entries[i];
                 GameObject item = Instantiate(diaryItemPrefab, contentPanel);
-                item.GetComponentInChildren<TextMeshProUGUI>().text = $"{entry.DateTime}\n{entry.Content}";
+                // item.GetComponentInChildren<TextMeshProUGUI>().text = $"{entry.DateTime}\n{entry.Content}";
+                //limit the number of characters displayed in the diary list
+                item.GetComponentInChildren<TextMeshProUGUI>().text = $"{entry.DateTime}\n{entry.Content.Substring(0, 50)}...";
 
                 Button editButton = item.GetComponentInChildren<Button>();
                 if (editButton != null)

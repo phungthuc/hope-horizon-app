@@ -14,7 +14,6 @@ public static class PlayerPrefsManager
         Debug.Log("TokenExpiryKey: " + PlayerPrefs.GetFloat(TokenExpiryKey));
     }
 
-    // Lưu Access Token
     public static void SetAccessToken(string token)
     {
         string encryptedToken = EncryptionUtils.Encrypt(token);
@@ -22,14 +21,12 @@ public static class PlayerPrefsManager
         PlayerPrefs.Save();
     }
 
-    // Lấy Access Token
     public static string GetAccessToken()
     {
         string encryptedToken = PlayerPrefs.GetString(AccessTokenKey, string.Empty);
         return string.IsNullOrEmpty(encryptedToken) ? string.Empty : EncryptionUtils.Decrypt(encryptedToken);
     }
 
-    // Lưu Refresh Token
     public static void SetRefreshToken(string token)
     {
         string encryptedToken = EncryptionUtils.Encrypt(token);
@@ -37,14 +34,12 @@ public static class PlayerPrefsManager
         PlayerPrefs.Save();
     }
 
-    // Lấy Refresh Token
     public static string GetRefreshToken()
     {
         string encryptedToken = PlayerPrefs.GetString(RefreshTokenKey, string.Empty);
         return string.IsNullOrEmpty(encryptedToken) ? string.Empty : EncryptionUtils.Decrypt(encryptedToken);
     }
 
-    // Xóa Tất Cả Token
     public static void ClearTokens()
     {
         PlayerPrefs.DeleteKey(AccessTokenKey);
@@ -53,26 +48,22 @@ public static class PlayerPrefsManager
         PlayerPrefs.Save();
     }
 
-    // Kiểm tra xem người dùng đã đăng nhập chưa
     public static bool IsUserLoggedIn()
     {
         return !string.IsNullOrEmpty(GetAccessToken());
     }
 
-    // Lưu thời gian hết hạn token
     public static void SetTokenExpiry(float expiryTime)
     {
         PlayerPrefs.SetFloat(TokenExpiryKey, expiryTime);
         PlayerPrefs.Save();
     }
 
-    // Lấy thời gian hết hạn token
     public static float GetTokenExpiry()
     {
         return PlayerPrefs.GetFloat(TokenExpiryKey, 0);
     }
 
-    // Kiểm tra thời gian hết hạn
     public static bool IsTokenExpired()
     {
         return Time.time >= GetTokenExpiry();
