@@ -79,7 +79,7 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
                     if (response != null)
                     {
                         PlayerPrefsManager.SetAccessToken(response.Access);
-                        float tokenExpiry = Time.time + 3600; // Ví dụ, 3600 giây = 1 giờ
+                        float tokenExpiry = Time.time + 3600;
                         PlayerPrefsManager.SetTokenExpiry(tokenExpiry);
                     }
                 }

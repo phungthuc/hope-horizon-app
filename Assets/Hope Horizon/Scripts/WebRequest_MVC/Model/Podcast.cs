@@ -29,6 +29,9 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Model
         [JsonProperty("content")]
         public string AudioUrl { get; set; }
 
+        public string FullImageUrl => Constants.BASE_URL + ImageTitle;
+        public string FullAudioUrl => Constants.BASE_URL + AudioUrl;
+
         [JsonProperty("created_at")]
         public DateTime CreatedAt { get; set; }
 
