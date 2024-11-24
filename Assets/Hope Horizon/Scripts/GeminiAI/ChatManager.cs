@@ -41,31 +41,29 @@ namespace Hope_Horizon.Scripts.GeminiAI
         public void AddMessageToUI(string text, bool isUser)
         {
             GameObject newMessage = Instantiate(messagePrefab, contentParent);
-            TextMeshProUGUI messageText = newMessage.transform.Find("Text").GetComponent<TextMeshProUGUI>();
-            TextMeshProUGUI timestampText = newMessage.transform.Find("Timestamp").GetComponent<TextMeshProUGUI>();
+
+            Transform messageContainer = newMessage.transform.Find("MessageContainer");
+
+            TextMeshProUGUI messageText = messageContainer.Find("Text").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI timestampText = messageContainer.Find("Timestamp").GetComponent<TextMeshProUGUI>();
 
             messageText.text = text;
             timestampText.text = DateTime.Now.ToString("HH:mm:ss");
 
-            RectTransform rect = newMessage.GetComponent<RectTransform>();
+            HorizontalLayoutGroup layoutGroup = newMessage.GetComponent<HorizontalLayoutGroup>();
 
             if (isUser)
             {
-                rect.anchorMin = new Vector2(1, 0);
-                rect.anchorMax = new Vector2(1, 0);
-                rect.pivot = new Vector2(1, 0);
-                rect.localPosition = new Vector3(-10, rect.localPosition.y, 0);
+                layoutGroup.childAlignment = TextAnchor.MiddleRight;
             }
             else
             {
-                rect.anchorMin = new Vector2(0, 0);
-                rect.anchorMax = new Vector2(0, 0);
-                rect.pivot = new Vector2(0, 0);
-                rect.localPosition = new Vector3(10, rect.localPosition.y, 0);
+                layoutGroup.childAlignment = TextAnchor.MiddleLeft;
 
                 // Scroll to bottom when a new message is added
                 this.ScrollToBottom();
             }
+
         }
 
         public void ScrollToBottom()
