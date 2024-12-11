@@ -45,7 +45,22 @@ namespace Hope_Horizon.Scripts.Components.Journal
                 GameObject item = Instantiate(diaryItemPrefab, contentPanel);
                 // item.GetComponentInChildren<TextMeshProUGUI>().text = $"{entry.DateTime}\n{entry.Content}";
                 //limit the number of characters displayed in the diary list
-                item.GetComponentInChildren<TextMeshProUGUI>().text = $"{entry.DateTime}\n{entry.Content.Substring(0, 50)}...";
+                string contentPreview;
+                if (entry.Content.Length > 50)
+                {
+                    int lastSpaceIndex = entry.Content.LastIndexOf(' ', 50);
+                    contentPreview = lastSpaceIndex > 0
+                        ? $"{entry.Content.Substring(0, lastSpaceIndex)}..."
+                        : $"{entry.Content.Substring(0, 50)}...";
+                }
+                else
+                {
+                    contentPreview = entry.Content;
+                }
+
+                item.GetComponentInChildren<TextMeshProUGUI>().text = $"{entry.DateTime}\n{contentPreview}";
+
+
 
                 Button editButton = item.GetComponentInChildren<Button>();
                 if (editButton != null)
