@@ -42,13 +42,24 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
 
                 if (request.result == UnityWebRequest.Result.Success)
                 {
-                    var posts = JsonConvert.DeserializeObject<List<Post>>(request.downloadHandler.text);
-                    view.DisplayPosts(posts);
+                    string jsonResponse = request.downloadHandler.text;
+                    Debug.Log("API Response: " + jsonResponse);
+
+                    try
+                    {
+                        var posts = JsonConvert.DeserializeObject<List<Post>>(jsonResponse);
+                        view.DisplayPosts(posts);
+                    }
+                    catch (JsonSerializationException ex)
+                    {
+                        Debug.LogError("Failed to deserialize JSON: " + ex.Message);
+                    }
                 }
                 else
                 {
                     Debug.LogError("Failed to load posts: " + request.error);
                 }
+
             }
         }
 
