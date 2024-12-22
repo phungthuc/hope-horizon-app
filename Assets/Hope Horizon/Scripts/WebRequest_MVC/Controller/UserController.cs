@@ -91,7 +91,7 @@ namespace Hope_Horizon.Scripts.WebRequest_MVC.Controller
             string jsonData = JsonConvert.SerializeObject(user);
             byte[] jsonToSend = Encoding.UTF8.GetBytes(jsonData);
 
-            using (UnityWebRequest request = new UnityWebRequest(baseUrl + "/register/", "POST"))
+            using (UnityWebRequest request = new UnityWebRequest(baseUrl + "/api/register/", "POST"))
             {
                 request.uploadHandler = new UploadHandlerRaw(jsonToSend);
                 request.downloadHandler = new DownloadHandlerBuffer();
