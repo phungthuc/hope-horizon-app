@@ -13,11 +13,18 @@ namespace Hope_Horizon.Scripts.GeminiAI
         [SerializeField] private TMP_InputField inputField;
         [SerializeField] private Button sendButton;
         [SerializeField] private APIManager apiManager;
+        [SerializeField] private string initialPrompt;
 
         private List<MessageData> chatHistory = new List<MessageData>();
+        private bool isAtBottom = true;
 
         private void Start()
         {
+            if (!string.IsNullOrEmpty(initialPrompt))
+            {
+                AddInitialPromptToUI();
+            }
+
             sendButton.onClick.AddListener(SendMessage);
             apiManager.OnResponseReceived += OnDoctorResponseReceived;
         }
@@ -38,6 +45,11 @@ namespace Hope_Horizon.Scripts.GeminiAI
             apiManager.Send(messageText);
         }
 
+        private void AddInitialPromptToUI()
+        {
+            apiManager.Send(initialPrompt);
+        }
+
         public void AddMessageToUI(string text, bool isUser)
         {
             GameObject newMessage = Instantiate(messagePrefab, contentParent);
@@ -50,6 +62,12 @@ namespace Hope_Horizon.Scripts.GeminiAI
             messageText.text = text;
             timestampText.text = DateTime.Now.ToString("HH:mm:ss");
 
+            RectTransform newMessageRect = newMessage.GetComponent<RectTransform>();
+            RectTransform messageContainerRect = messageContainer.GetComponent<RectTransform>();
+            float textHeight = messageText.preferredHeight;
+            newMessageRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, textHeight + 300);
+            messageContainerRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, textHeight + 300);
+
             HorizontalLayoutGroup layoutGroup = newMessage.GetComponent<HorizontalLayoutGroup>();
 
             if (isUser)
@@ -59,23 +77,27 @@ namespace Hope_Horizon.Scripts.GeminiAI
             else
             {
                 layoutGroup.childAlignment = TextAnchor.MiddleLeft;
-
-                // Scroll to bottom when a new message is added
-                this.ScrollToBottom();
             }
 
+            Canvas.ForceUpdateCanvases();
+
+            ScrollToTopOfLastMessage();
         }
 
-        public void ScrollToBottom()
+        public void ScrollToTopOfLastMessage()
         {
+            RectTransform lastMessageRect = contentParent.GetChild(contentParent.childCount - 1).GetComponent<RectTransform>();
+
             ScrollRect scrollRect = contentParent.GetComponentInParent<ScrollRect>();
-            if (scrollRect != null)
+
+            if (scrollRect != null && lastMessageRect != null)
             {
-                scrollRect.verticalNormalizedPosition = 0f;
+                float messagePosY = lastMessageRect.localPosition.y;
+
+                Vector3 newPosition = contentParent.localPosition;
+                newPosition.y = -messagePosY;
+                contentParent.localPosition = newPosition;
             }
         }
-
-
     }
-
 }
